@@ -13,8 +13,10 @@
 class NetReader {
 
     public:
+        int httpResponseCode=0;
+
         void ConnectToWiFi();
-        void readData();
+        String readData(String path);
         void ntp();
 
 

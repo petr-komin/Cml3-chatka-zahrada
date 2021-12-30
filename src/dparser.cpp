@@ -1,6 +1,6 @@
   #include "dparser.h"
 
-
+#include <ArduinoJson.h>
 
   //#define Serial Serial3
 
@@ -239,4 +239,42 @@ long Dparser::sklenikTimeout(){
 long Dparser::sudTimeout(){
 	uint32_t t= 0 ;//rtc->getTime();
 	return t - sudRXTime;
+}
+
+int Dparser::parseKadibouda(String data){
+
+    String line="";
+    for(int i=0; i<data.length(); i++){
+        if ((char)data[i]==10) {
+            int x = line.indexOf(' ');
+            String json = line.substring(x+1);
+            String cas = line.substring(0, x);
+            //Serial.println(">>"+ cas  + "'"+ json +"'");
+
+            StaticJsonDocument<200> doc;
+            DeserializationError error = deserializeJson(doc, json);
+
+            if (error) {
+                Serial.print(F("deserializeJson() failed: "));
+                Serial.println(error.f_str());
+                return -1;
+            }
+
+            const char* sensor = doc["s"];
+            double t1 = doc["t1"];
+            double t2 = doc["t2"];
+            double t = doc["t"];
+            double bat = doc["bat"];
+
+            Serial.print(" ? ");
+            Serial.println(String(sensor)+" t1="+String(t1)+" t2="+String(t2) + "  t=" + String(t) + " bat="+String(bat));
+
+
+
+
+            line="";
+        }else{
+            line += data[i];
+        }
+    }
 }

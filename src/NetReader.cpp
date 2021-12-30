@@ -13,7 +13,7 @@
 
 
 String serverName = "http://192.168.8.1";
-
+const char cml_ssid[] = "Kadibouda";
 WiFiUDP ntpUDP;
 
 
@@ -25,12 +25,13 @@ void ConnectInternet() {
     Serial.println("Connecting  "+String(ssid) );
 
     uint8_t i = 0;
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.status() != WL_CONNECTED && i<15) {
         Serial.print('.');
         delay(500);
 
         if ((++i % 16) == 0) {
-            Serial.println(F(" still trying to connect"));
+            Serial.print(F(" still trying to connect "));
+            Serial.println (cml_ssid);
         }
     }
 
@@ -56,6 +57,7 @@ void NetReader::ntp(){
     }else{
         Serial.println("WL not connected for NTP");
     }
+    WiFi.disconnect();
 }
 
 void NetReader::ConnectToWiFi() {
@@ -79,45 +81,38 @@ void NetReader::ConnectToWiFi() {
 
 }
 
-
-
-
-void NetReader::readData() {
+String NetReader::readData(String path) {
+    Serial.println("GET data "+path);
+    String payload ="";
+    if (WiFi.status() != WL_CONNECTED){
+        ConnectToWiFi();
+    }
 
     if(WiFi.status()== WL_CONNECTED){
+        //return socketGet(path);
         HTTPClient http;
-
-        String serverPath = serverName +"/data/2021-12-30.txt";
-
+        String serverPath = serverName + path;
         // Your Domain name with URL path or IP address with path
         http.begin(serverPath.c_str());
-
-        // Send HTTP GET request
+        //http.useHTTP10(true);
         int httpResponseCode = http.GET();
-
-        http.setTimeout(3000);
 
         if (httpResponseCode>0) {
             Serial.print("HTTP Response code: ");
             Serial.println(httpResponseCode);
-
-
-
-            String payload = http.getString();
-            Serial.println(payload);
-        }
-        else {
+            payload = http.getString();
+        } else {
             Serial.print("Error code: ");
             Serial.println(httpResponseCode);
         }
         // Free resources
         http.end();
-    }
-    else {
+    } else {
         Serial.println("WiFi Disconnected");
     }
 
 
-
+    //WiFi.disconnect();
+    return payload;
 
 }

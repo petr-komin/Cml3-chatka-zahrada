@@ -46,8 +46,8 @@ uint16_t barva(char r, char g, char b) {
   //tft.setCursor(122,32);
   //tft.println("Radio");
 
- // tft.drawCircle(160, 120, 100, barva(0,90,0));
- // tft.drawCircle(160, 120, 110, barva(0,90,0));
+  tft.drawCircle(160, 120, 100, barva(0,90,0));
+  tft.drawCircle(160, 120, 110, barva(2,80,0));
 
   barva_freq = barva(055,255,95);
 

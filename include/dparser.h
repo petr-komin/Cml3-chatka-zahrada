@@ -10,6 +10,7 @@ class Dparser{
       void parseDatetime(String val);
       void parseSklenikData(String s);
 
+
   public:
     String voda="*";
     String venku="*";
@@ -30,6 +31,7 @@ class Dparser{
     long sklenikTimeout();
     long sudTimeout();
 
+    int parseKadibouda(String data);
 
 };
 
