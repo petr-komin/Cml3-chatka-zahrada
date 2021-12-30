@@ -1,0 +1,36 @@
+#include <Arduino.h>
+#ifndef dparser_h
+#define dparser_h
+
+
+class Dparser{
+
+  void parseLine(String line);
+  void parseVoltageLine(String line, int);
+      void parseDatetime(String val);
+      void parseSklenikData(String s);
+
+  public:
+    String voda="*";
+    String venku="*";
+    String vlhko="*";
+    String sud="???";
+    String sklenik="?*";
+    String zaSklenikem="?-";
+    String baterySklenik="?.?";
+    uint32_t sklenikRXTime=0;
+    uint32_t sudRXTime=0;
+  //  STM32F1_RTC *rtc;
+
+    long volty[32];
+    int timebuf[8];
+    bool timeRecieved=false;
+    void parseBuf(String s);
+    void parseBateryData(String s);
+    long sklenikTimeout();
+    long sudTimeout();
+
+
+};
+
+#endif
