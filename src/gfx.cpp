@@ -248,9 +248,9 @@ void sklenikoveUdaje(Dparser *dp){
 
 	tft.setFont(&FreeSmallFont);
 	tft.setCursor(x,y);
-	tft.setTextColor(b3); tft.print("sklenik");
+	tft.setTextColor(b3); tft.print("dole");
 	tft.setFont(&cmunbx16pt7b);
-	reprint(x, y+30, b , dp->sklenik , 2);
+	reprint(x, y+30, b , String(dp->sauna1.number,1) , 2);
 
 
 	x+=95;
@@ -258,14 +258,14 @@ void sklenikoveUdaje(Dparser *dp){
 
 	tft.setFont(&FreeSmallFont);
 	tft.setCursor(x,y);
-	tft.setTextColor(b3); tft.print("venku");
+	tft.setTextColor(b3); tft.print("nahore");
 	tft.setFont(&cmunbx16pt7b);
-	reprint(x, y+30, b2 , dp->zaSklenikem , 3);
+	reprint(x, y+30, b2 , String(dp->sauna2.number,1) , 3);
 
 
 
 	tft.setFont(&cmunobx8pt7b);
-	reprint(x+80, y+30, b3 , dp->baterySklenik , 4);
+	reprint(x+80, y+30, b3 , String(dp->sauna_bat.number,2) , 4);
 
 }
 
@@ -286,9 +286,12 @@ void externiTeplomer(Dparser * dp){
     void Lgfx::espUdaje(Dparser *dp){
     	sklenikoveUdaje(dp);
     	vodarna(dp);
-      int y=100;
-      int x=12;
-      if (lasti[0]!= dp->voda || lasti[1]!=dp->venku || lasti[2]!=dp->vlhko){
+        int y=100;
+        int x=12;
+
+      String venku= String(dp->kadiba.number,1);
+
+      if (lasti[0]!= dp->voda || lasti[1]!=venku || lasti[2]!=dp->vlhko){
 
     	  uint16_t b = barva(0,100,80);
     	  externiTeplomer(dp);
@@ -300,7 +303,7 @@ void externiTeplomer(Dparser * dp){
           reprint(x, y, b , dp->vlhko+"%" , 7);
 
           lasti[0] = dp->voda;
-          lasti[1] = dp->venku;
+          lasti[1] = venku;
           lasti[2] = dp->vlhko;
 
 
@@ -312,7 +315,7 @@ void externiTeplomer(Dparser * dp){
           		tft.setCursor(x,y);
           		tft.print("venku");
           		tft.setFont(&cmunbx16pt7b);
-          		reprint(x, y+30, barva(00,180,0) , dp->venku , 1);
+          		reprint(x, y+30, barva(00,180,0) , venku , 1);
       }
 
     }

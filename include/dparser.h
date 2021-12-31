@@ -3,17 +3,30 @@
 #define dparser_h
 
 
+class Udaj{
+    public:
+        String str="";
+        double number;
+        long timestamp;
+};
+
 class Dparser{
 
-  void parseLine(String line);
-  void parseVoltageLine(String line, int);
-      void parseDatetime(String val);
-      void parseSklenikData(String s);
+    void parseLine(String line);
+    void parseVoltageLine(String line, int);
+    void parseDatetime(String val);
+    void parseSklenikData(String s);
 
 
   public:
+    Udaj sauna1;
+    Udaj sauna2;
+    Udaj sauna_bat;
+    Udaj kadiba;
+
+
     String voda="*";
-    String venku="*";
+
     String vlhko="*";
     String sud="???";
     String sklenik="?*";
@@ -32,6 +45,7 @@ class Dparser{
     long sudTimeout();
 
     int parseKadibouda(String data);
+    void parseKadiTime(String data);
 
 };
 

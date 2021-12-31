@@ -5,6 +5,8 @@
   //#define Serial Serial3
 
 
+
+
 void Dparser::parseDatetime(String val){
 
   int i=0;
@@ -69,7 +71,7 @@ void Dparser::parseLine(String line){
     voda = val;
   }
 
-  if (k==2) venku=val;
+
   if (k==3) vlhko=val;
 
   //if (k==0) parseDatetime(val);
@@ -249,7 +251,7 @@ int Dparser::parseKadibouda(String data){
             int x = line.indexOf(' ');
             String json = line.substring(x+1);
             String cas = line.substring(0, x);
-            //Serial.println(">>"+ cas  + "'"+ json +"'");
+            Serial.println(">>"+ cas  + "'"+ json +"'");
 
             StaticJsonDocument<200> doc;
             DeserializationError error = deserializeJson(doc, json);
@@ -260,21 +262,30 @@ int Dparser::parseKadibouda(String data){
                 return -1;
             }
 
-            const char* sensor = doc["s"];
-            double t1 = doc["t1"];
-            double t2 = doc["t2"];
-            double t = doc["t"];
-            double bat = doc["bat"];
+            const char* sens = doc["s"];
+            String sensor = String(sens);
 
-            Serial.print(" ? ");
-            Serial.println(String(sensor)+" t1="+String(t1)+" t2="+String(t2) + "  t=" + String(t) + " bat="+String(bat));
+            if (sensor == "tep1") {
+                sauna1.number = doc["t1"];
+                sauna2.number = doc["t2"];
+                sauna_bat.number = doc["bat"];
+            }
 
-
-
+            if (sensor == "Kadib") {
+                kadiba.number = doc["t"];
+            }
 
             line="";
         }else{
             line += data[i];
         }
     }
+}
+
+void Dparser::parseKadiTime(String data){
+
+    int x = data.indexOf('T');
+
+
+
 }
