@@ -46,8 +46,8 @@ uint16_t barva(char r, char g, char b) {
   //tft.setCursor(122,32);
   //tft.println("Radio");
 
-  tft.drawCircle(160, 120, 100, barva(0,90,0));
-  tft.drawCircle(160, 120, 110, barva(2,80,0));
+ // tft.drawCircle(160, 120, 100, barva(0,90,0));
+ // tft.drawCircle(160, 120, 110, barva(2,80,0));
 
   barva_freq = barva(055,255,95);
 
@@ -279,12 +279,13 @@ void externiTeplomer(Dparser * dp){
 	tft.setCursor(x+4,y+20);
 	tft.print("sklad");
 	tft.setFont(&cmunbx16pt7b);
-	double v = dp->voda.toFloat();
+	double v = dp->kadiba.number;
 	reprint(x+4, y+20+30, b , String(v,1) , 6);
 }
 
     void Lgfx::espUdaje(Dparser *dp){
     	sklenikoveUdaje(dp);
+        externiTeplomer(dp);
     	vodarna(dp);
         int y=100;
         int x=12;
@@ -294,7 +295,7 @@ void externiTeplomer(Dparser * dp){
       if (lasti[0]!= dp->voda || lasti[1]!=venku || lasti[2]!=dp->vlhko){
 
     	  uint16_t b = barva(0,100,80);
-    	  externiTeplomer(dp);
+
 
     	  tft.setFont(&cmuntt14pt7b);
           tft.setCursor(x,y);
@@ -368,26 +369,28 @@ tft.setFont(&cmunobx8pt7b);
       int x=15;
       int y=160;
 
-      tft.setFont(&cmuntt14pt7b);
-      superPrint(x+80, y, barva(90,90,90) , 15, String(teplota1,1) , 4);
-      superPrint(x, y, YELLOW , 15, String(tlak,0) , 5);
+  //    tft.setFont(&cmuntt14pt7b);
+//      superPrint(x+80, y, barva(90,90,90) , 15, String(teplota1,1) , 4);
+//      superPrint(x, y, YELLOW , 15, String(tlak,0) , 5);
 
 
 
       	x=100;
 		tft.setFont(&FreeSmallFont);
 		tft.setCursor(x,20);
+        tft.setTextColor(YELLOW);
 		tft.print("tady");
 		tft.setFont(&cmunbx16pt7b);
 		reprint(x, 50, YELLOW , String(teplota2,1) , 0);
 
 
 
-		uint16_t b = barva(0,90,255);
+		uint16_t b = barva(0,180,255);
 
       	x=200;
 		tft.setFont(&FreeSmallFont);
 		tft.setCursor(x,20);
+        tft.setTextColor(b);
 		tft.print("voda");
 		tft.setFont(&cmunbx16pt7b);
 		reprint(x, 50, b , String(teplota3,1) , 35);

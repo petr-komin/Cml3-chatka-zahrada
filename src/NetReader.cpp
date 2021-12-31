@@ -64,20 +64,24 @@ void NetReader::ConnectToWiFi() {
 
     WiFi.mode(WIFI_STA);
     WiFi.begin("Kadibouda");
-    Serial.println("Connecting  ");
+    Serial.println("Connecting  Kadibouda");
 
     uint8_t i = 0;
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.status() != WL_CONNECTED && i < 31) {
         Serial.print('.');
         delay(500);
 
         if ((++i % 16) == 0) {
-            Serial.println(F(" still trying to connect"));
+            Serial.println(F(" still trying to connect Kadibouda"));
         }
     }
 
-    Serial.print(F("Connected. My IP address is: "));
-    Serial.println(WiFi.localIP());
+    if (WiFi.status() != WL_CONNECTED) {
+        Serial.print(F("Connected. My IP address is: "));
+        Serial.println(WiFi.localIP());
+    }else{
+        Serial.print(F("WL not connected Kadibouda"));
+    }
 
 }
 

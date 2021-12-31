@@ -286,6 +286,29 @@ void Dparser::parseKadiTime(String data){
 
     int x = data.indexOf('T');
 
+    String datumStr = data.substring(0,x);
+    String casStr = data.substring(x+1, data.length());
 
+    Serial.println(" .... dt ... ["+datumStr+"] ["+casStr+"]");
+    String l ="";
+    int hour;
+    int minute;
+    int sec;
+    String ln[3];
+    int a=0;
+    ln[a]="";
+    for( int i=0; i< casStr.length(); i++){
+        if (casStr[i]!=':'){
+            ln[a] += casStr[i];
+        }else{
+            a++;
+            ln[a]="";
+        }
+    }
+
+
+    Serial.println(" cas ka kusy {" + ln[0] + " " +  ln[1]  + " " + ln[2]+"}");
+
+    datareqPath = "/data/"+ datumStr+"/"+ln[0]+".txt";
 
 }

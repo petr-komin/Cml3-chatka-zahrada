@@ -36,6 +36,8 @@ class Dparser{
     uint32_t sudRXTime=0;
   //  STM32F1_RTC *rtc;
 
+    String datareqPath="";
+
     long volty[32];
     int timebuf[8];
     bool timeRecieved=false;
