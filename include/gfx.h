@@ -12,7 +12,7 @@
 
 
 #include "dparser.h"
-
+#include "RTClib.h"
 
 
 
@@ -63,7 +63,7 @@ class Lgfx{
 
     void espUdaje(Dparser *);
 
-//    void printDateTime(DateVar*, TimeVar*);
+    void printDateTime(DateTime *);
 
     void ruzneUdaje(float teplota1, float t2, float t3, float tlak);
 

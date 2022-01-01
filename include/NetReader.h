@@ -17,7 +17,7 @@ class NetReader {
 
         void ConnectToWiFi();
         String readData(String path);
-        void ntp();
+        String ntp();
 
 
 };

@@ -334,8 +334,10 @@ String dvojcislo(int x){
   String last_t_s="";
 
   bool ctverec_hodin=false;
-/*
-  void Lgfx::printDateTime(DateVar* d, TimeVar* t){
+
+  void Lgfx::printDateTime(DateTime * dt){
+
+
 
 
   int x=12;
@@ -353,18 +355,18 @@ String dvojcislo(int x){
 
     tft.setCursor(x,y);
 
-    String s = dvojcislo(t->hours)+":"+dvojcislo(t->minutes)+":"+dvojcislo(t->seconds);
+    String s = dvojcislo(dt->hour())+":"+dvojcislo(dt->minute() )+":"+dvojcislo(dt->second());
     superPrint(x, y, barva_hodin , 20, s , 7);
 
 
 tft.setFont(&cmunobx8pt7b);
 
-    String datum = String(d->day)+"."+String(d->month)+".";
+    String datum = String(dt->day())+"."+String(dt->month())+".";
     superPrint(x, y-30, barva_datumu , 15, datum , 6);
 
   }
 
-*/
+
   void Lgfx::ruzneUdaje(float teplota1, float teplota2, float teplota3, float tlak){
       int x=15;
       int y=160;

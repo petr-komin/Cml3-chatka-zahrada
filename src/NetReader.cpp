@@ -42,7 +42,7 @@ void ConnectInternet() {
 
 
 
-void NetReader::ntp(){
+String NetReader::ntp(){
     ConnectInternet();
     NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 0, 60000);
     if(WiFi.status()== WL_CONNECTED) {
@@ -52,12 +52,13 @@ void NetReader::ntp(){
         timeClient.update();
         Serial.println( timeClient.getFormattedTime());
         Serial.println( timeClient.getFormattedDate());
-        Serial.println( timeClient.getFormattedDate());
         timeClient.end();
     }else{
         Serial.println("WL not connected for NTP");
+        return "";
     }
     WiFi.disconnect();
+    return timeClient.getFormattedDate();
 }
 
 void NetReader::ConnectToWiFi() {

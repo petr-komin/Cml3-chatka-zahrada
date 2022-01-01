@@ -4,13 +4,16 @@
 
 #include <DallasTemperature.h>
 #include <OneWire.h>
-
 #include "gfx.h"
 #include "NetReader.h"
 
 Lgfx gfx;
 Dparser dp;
 NetReader noro;
+
+#include "RTClib.h"
+
+RTC_DS1307 rtc;
 
 const int oneWireBus = 4;
 
@@ -20,12 +23,77 @@ OneWire oneWire(oneWireBus);
 DallasTemperature sensors(&oneWire);
 
 
+void showDate(const char* txt, const DateTime& dt) {
+    Serial.print(txt);
+    Serial.print(' ');
+    Serial.print(dt.year(), DEC);
+    Serial.print('/');
+    Serial.print(dt.month(), DEC);
+    Serial.print('/');
+    Serial.print(dt.day(), DEC);
+    Serial.print(' ');
+    Serial.print(dt.hour(), DEC);
+    Serial.print(':');
+    Serial.print(dt.minute(), DEC);
+    Serial.print(':');
+    Serial.print(dt.second(), DEC);
+
+    Serial.print(" = ");
+    Serial.print(dt.unixtime());
+    Serial.print("s / ");
+    Serial.print(dt.unixtime() / 86400L);
+    Serial.print("d since 1970");
+
+    Serial.println();
+}
+
+#define I2C_Freq 100000
+
+
+#define SDA_1 34
+#define SCL_1 35
+#define I2C_SDA 33
+#define I2C_SCL 32
+
+TwoWire I2CBME = TwoWire(0);
+
 void setup() {
   Serial.begin(57600);
-//    Wire.begin(); // Wire communication begin
+  //Wire.begin(SDA_1, SCL_1); // Wire communication begin
+
   gfx.init();
 
-  noro.ntp();
+  delay(3000);
+
+    I2CBME.begin(I2C_SDA, I2C_SCL, 100000);
+
+    if (! rtc.begin(&I2CBME)) {
+        Serial.println("Couldn't find RTC");
+        Serial.flush();
+        delay(1000);
+    }
+
+    if (! rtc.isrunning()) {
+        Serial.println("RTC is NOT running, let's set the time!");
+        // When time needs to be set on a new device, or after a power loss, the
+        // following line sets the RTC to the date & time this sketch was compiled
+        rtc.adjust(DateTime(2022, 1,1,10,0,0))  ;
+        // This line sets the RTC with an explicit date & time, for example to set
+        // January 21, 2014 at 3am you would call:
+        // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+    }
+
+        String formattedDatetime = noro.ntp();
+        if (formattedDatetime.length()>5){
+            char s[33];
+            formattedDatetime.toCharArray(s, 33);
+            DateTime dntp = DateTime(s);
+            showDate(">>>>> ",dntp);
+            rtc.adjust(dntp);
+        }
+        delay(5000);
+
+
   //noro.ConnectToWiFi();
  //gfx.napeti(&dp);
  //gfx.ruzneUdaje(100, 2323, 222, 1200);
@@ -48,6 +116,7 @@ float tlak = -100;
 
 float teplota2;
 float teplota3;
+DateTime now;
 
 void loop(void) {
 
@@ -66,11 +135,17 @@ void loop(void) {
 
 
     if (kokon % 10 ==0) {
+
+        now = rtc.now();
+        now = now +  TimeSpan(3600);
+
+        gfx.printDateTime(&now);
+
         Serial.print("`");
 
         teplota1 = -100;  //bmp.readTemperature();
         tlak = -100; //(bmp.readPressure()/100.00) + korekce;
-        uint8_t devcount = sensors.getDeviceCount();
+
         sensors.requestTemperatures(); // Send the command to get temperature
         teplota2 = sensors.getTempCByIndex(0);
         teplota3 = sensors.getTempCByIndex(1);
@@ -89,6 +164,10 @@ void loop(void) {
         if (data.length()>0){
             dp.parseKadiTime(data);
         }
+
+
+        now = rtc.now();
+        showDate("RTC  datum cas ", now);
 
         if (dp.datareqPath.length()>4) {
             Serial.println("Kadiba");
