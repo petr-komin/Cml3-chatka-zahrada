@@ -42,6 +42,9 @@ uint16_t barva(char r, char g, char b) {
   tft.fillScreen(0);
   tft.setTextColor(YELLOW,BLACK);
 
+
+
+
   //tft.setTextSize(1);
   //tft.setCursor(122,32);
   //tft.println("Radio");
@@ -366,14 +369,29 @@ tft.setFont(&cmunobx8pt7b);
 
   }
 
+void Lgfx::connecting(String s) {
+
+      int x = 60;
+      int y = 60;
+
+        tft.fillRect(x , y , 300, 40, BLACK);
+
+        if (s.length()>0) {
+            tft.setFont(&FreeSans12pt7b);
+            tft.setCursor(x+3,y+32);
+            tft.setTextColor(RED);
+            tft.print(s);
+        }
+  }
+
 
   void Lgfx::ruzneUdaje(float teplota1, float teplota2, float teplota3, float tlak){
       int x=15;
       int y=160;
 
-  //    tft.setFont(&cmuntt14pt7b);
-//      superPrint(x+80, y, barva(90,90,90) , 15, String(teplota1,1) , 4);
-//      superPrint(x, y, YELLOW , 15, String(tlak,0) , 5);
+      tft.setFont(&cmuntt14pt7b);
+      superPrint(x+80, y, barva(90,90,90) , 15, String(teplota1,1) , 4);
+      superPrint(x, y, YELLOW , 15, String(tlak,0) , 5);
 
 
 

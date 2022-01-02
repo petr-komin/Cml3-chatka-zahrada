@@ -67,6 +67,8 @@ class Lgfx{
 
     void ruzneUdaje(float teplota1, float t2, float t3, float tlak);
 
+    void connecting(String s);
+
   };
 
 #endif

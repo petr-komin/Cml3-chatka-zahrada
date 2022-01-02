@@ -8,7 +8,7 @@
 #include <Arduino.h>
 #include <NTPClient.h>
 
-
+#include "gfx.h"
 
 class NetReader {
 
@@ -17,7 +17,7 @@ class NetReader {
 
         void ConnectToWiFi();
         String readData(String path);
-        String ntp();
+        String ntp(Lgfx *);
 
 
 };

@@ -17,11 +17,14 @@ const char cml_ssid[] = "Kadibouda";
 WiFiUDP ntpUDP;
 
 
-void ConnectInternet() {
+void ConnectInternet(Lgfx * gfx) {
     const char ssid[] = "OK1BE";
     const char pass[] = "WIFI_PASSWORD_REMOVED";
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, pass);
+
+    gfx->connecting("Connecting OK1BE");
+
     Serial.println("Connecting  "+String(ssid) );
 
     uint8_t i = 0;
@@ -35,18 +38,24 @@ void ConnectInternet() {
         }
     }
 
-    Serial.print(F("Connected. My IP address is: "));
-    Serial.println(WiFi.localIP());
-
+    if (WiFi.status() == WL_CONNECTED) {
+        gfx->connecting("Připojeno");
+        Serial.print(F("Connected. My IP address is: "));
+        Serial.println(WiFi.localIP());
+    }else{
+        gfx->connecting("Bez připojení");
+    }
 }
 
 
 
-String NetReader::ntp(){
-    ConnectInternet();
+String NetReader::ntp(Lgfx * gfx){
+
+    ConnectInternet(gfx);
     NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 0, 60000);
     if(WiFi.status()== WL_CONNECTED) {
         Serial.println("timeclient ...");
+        gfx->connecting("Načítám přesný čas");
 
         timeClient.begin();
         timeClient.update();

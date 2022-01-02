@@ -1,7 +1,7 @@
 #include <Arduino.h>
 //#include <Adafruit_I2CDevice.h>
 
-
+#include <Adafruit_BMP280.h>
 #include <DallasTemperature.h>
 #include <OneWire.h>
 #include "gfx.h"
@@ -12,6 +12,11 @@ Dparser dp;
 NetReader noro;
 
 #include "RTClib.h"
+
+#define BMP280_ADRESA (0x76)
+
+
+int korekce = 32;
 
 RTC_DS1307 rtc;
 
@@ -50,12 +55,13 @@ void showDate(const char* txt, const DateTime& dt) {
 #define I2C_Freq 100000
 
 
-#define SDA_1 34
-#define SCL_1 35
+
 #define I2C_SDA 33
 #define I2C_SCL 32
 
 TwoWire I2CBME = TwoWire(0);
+
+Adafruit_BMP280 bmp = Adafruit_BMP280(&I2CBME);
 
 void setup() {
   Serial.begin(57600);
@@ -63,7 +69,10 @@ void setup() {
 
   gfx.init();
 
-  delay(3000);
+
+
+
+  //delay(3000);
 
     I2CBME.begin(I2C_SDA, I2C_SCL, 100000);
 
@@ -83,7 +92,9 @@ void setup() {
         // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
     }
 
-        String formattedDatetime = noro.ntp();
+        String formattedDatetime = noro.ntp(&gfx);
+
+
         if (formattedDatetime.length()>5){
             char s[33];
             formattedDatetime.toCharArray(s, 33);
@@ -91,21 +102,27 @@ void setup() {
             showDate(">>>>> ",dntp);
             rtc.adjust(dntp);
         }
-        delay(5000);
+        //delay(5000);
 
 
-  //noro.ConnectToWiFi();
- //gfx.napeti(&dp);
- //gfx.ruzneUdaje(100, 2323, 222, 1200);
+        gfx.connecting("");
+        //noro.ConnectToWiFi();
+        //gfx.napeti(&dp);
+        //gfx.ruzneUdaje(100, 2323, 222, 1200);
 
     Serial2.begin(4800);
     Serial2.setTimeout(100);
+
+    if (!bmp.begin(BMP280_ADRESA)) {
+        Serial.println("BMP280 senzor nenalezen, zkontrolujte zapojeni!");
+        delay(1000);
+    }
 
     sensors.begin();
     Serial.print("Found ");
     Serial.print(sensors.getDeviceCount(), DEC);
     Serial.println(" devices.");
-    delay(1000);
+
 }
 
 long et;
@@ -143,8 +160,8 @@ void loop(void) {
 
         Serial.print("`");
 
-        teplota1 = -100;  //bmp.readTemperature();
-        tlak = -100; //(bmp.readPressure()/100.00) + korekce;
+        teplota1 = bmp.readTemperature();
+        tlak = (bmp.readPressure()/100.00) + korekce;
 
         sensors.requestTemperatures(); // Send the command to get temperature
         teplota2 = sensors.getTempCByIndex(0);
