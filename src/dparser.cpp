@@ -77,66 +77,6 @@ void Dparser::parseLine(String line){
   //if (k==0) parseDatetime(val);
 }
 
-void Dparser::parseBuf(String s){
-  timeRecieved = false;
-//void parseData(String s){
-
-  int d1 = s.indexOf("<data>", 0);
-  int d2 = s.indexOf("</data>", d1+6);
-
-
- // Serial.println("hledani "+String(d1)+ "  "+String(d2));
-  if (d1>=0 && d2>d1+26){
-    String sub =  s.substring(d1+6, d2);
-   //  Serial.println("vnitrek "+ sub);
-
-     int i=0;
-     int maxi=sub.length();
-     String line="";
-     int l=0;
-     while(i<maxi){
-
-        if (sub[i]=='\n'){
-          Serial.println(" line "+String(l)+":"+line);
-          parseLine(line);
-          line="";
-          l++;
-        }else{
-          line+=  sub[i];
-        }
-        i++;
-     }
-  }
-
-  d1 = s.indexOf("<time>", 0);
-  d2 = s.indexOf("</time>", d1+6);
-
-  if (d1>=0 && d2>d1+20){
-    String sub =  s.substring(d1+6, d2);
-    parseDatetime(sub);
-
-  }
-
-
-  d1 = s.indexOf("<skl>", 0);
-  d2 = s.indexOf("</skl>", d1+5);
-  if (d1>=0 && d2>d1+10){
-      String sub =  s.substring(d1+5, d2);
-      parseSklenikData(sub);
-
-  }
-
-  d1 = s.indexOf("<sud>", 0);
-  d2 = s.indexOf("</sud>", d1+5);
-  if (d1>=0 && d2>d1+5){
-	  sud = s.substring(d1+5, d2);
-	//  sudRXTime = rtc->getTime();
-  }
-
-
-}
-
-
 void Dparser::parseVoltageLine(String line, int lineNum){
 
 
@@ -173,33 +113,6 @@ void Dparser::parseVoltageLine(String line, int lineNum){
 
 }
 
-void Dparser::parseSklenikData(String s){
-// 	<skl>
-//	<cas>(2000, 1, 1, 2, 7, 9, 5, 1)</cas>
-//	<t1>23.1</t1>
-//	<t2>16.1</t2>
-//	<u>3.28</u>
-//	</skl>
-	int a, b;
-
-	a= s.indexOf("<t1>", 0);
-	b= s.indexOf("</t1>", a+4);
-
-	if (a>=0 && b>=0) sklenik= s.substring(a+4, b);
-
-	a= s.indexOf("<t2>", 0);
-	b = s.indexOf("</t2>", a+4);
-
-	if (a>=0 && b>=0) zaSklenikem=s.substring(a+4, b);
-
-    a= s.indexOf("<u>", 0);
-    b = s.indexOf("</u>", a+3);
-
-    if (a>=0 && b>=0) baterySklenik=s.substring(a+3, b);
-
-    Serial.println("Sklenik: "+sklenik+ " / "+zaSklenikem+ " / "+baterySklenik);
-  //  sklenikRXTime = rtc->getTime();
-};
 
 void Dparser::parseBateryData(String s){
   if (s.length()<24) return;
@@ -243,6 +156,10 @@ long Dparser::sudTimeout(){
 	return t - sudRXTime;
 }
 
+
+
+
+
 int Dparser::parseKadibouda(String data){
 
     String line="";
@@ -251,28 +168,46 @@ int Dparser::parseKadibouda(String data){
             int x = line.indexOf(' ');
             String json = line.substring(x+1);
             String cas = line.substring(0, x);
-            Serial.println(">>"+ cas  + "'"+ json +"'");
+            // Serial.println(">>"+ cas  + "'"+ json +"'");
 
-            StaticJsonDocument<200> doc;
-            DeserializationError error = deserializeJson(doc, json);
+            if (json.length()>1){
 
-            if (error) {
-                Serial.print(F("deserializeJson() failed: "));
-                Serial.println(error.f_str());
-                return -1;
-            }
+                StaticJsonDocument<200> doc;
+                DeserializationError error = deserializeJson(doc, json);
 
-            const char* sens = doc["s"];
-            String sensor = String(sens);
+                if (error) {
+                    Serial.print(F("deserializeJson() failed: "));
+                    Serial.println(error.f_str());
+                    return -1;
+                }
 
-            if (sensor == "tep1") {
-                sauna1.number = doc["t1"];
-                sauna2.number = doc["t2"];
-                sauna_bat.number = doc["bat"];
-            }
+                const char* sens = doc["s"];
+                String sensor = String(sens);
 
-            if (sensor == "Kadib") {
-                kadiba.number = doc["t"];
+                if (sensor == "tep1") {
+                    sauna1.number = doc["t1"];
+                    sauna2.number = doc["t2"];
+                    sauna_bat.number = doc["bat"];
+                }
+
+                if (sensor == "Kadib") {
+                    kadiba.number = doc["t"];
+                }
+
+                if (sensor == "sud"){
+                    double x =doc["v"];
+                    sud = String(x,1);
+                }
+
+                if (sensor == "skl"){
+                    double x =doc["t"];
+                    sklenik = String(x,1);
+
+                }
+
+
+            }else{
+                Serial.println("Nic tam nebylo...");
             }
 
             line="";

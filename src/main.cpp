@@ -142,7 +142,7 @@ void loop(void) {
         char c = Serial2.read();
         batbuf+=c;
         if (c=='\n'){
-            Serial.println("Bat Line:"+batbuf);
+            //Serial.println("Bat Line:"+batbuf);
             dp.parseBateryData(batbuf);
             gfx.napeti(&dp);
             batbuf="";

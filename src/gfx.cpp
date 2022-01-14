@@ -274,13 +274,13 @@ void sklenikoveUdaje(Dparser *dp){
 
 void externiTeplomer(Dparser * dp){
 
-	uint16_t b = barva(255,150,00);
+	uint16_t b = barva(5,255,40);
    	int x=10;
    	int y=0;
    	tft.setTextColor(b);
 	tft.setFont(&FreeSmallFont);
 	tft.setCursor(x+4,y+20);
-	tft.print("sklad");
+	tft.print("venku");
 	tft.setFont(&cmunbx16pt7b);
 	double v = dp->kadiba.number;
 	reprint(x+4, y+20+30, b , String(v,1) , 6);
@@ -299,13 +299,6 @@ void externiTeplomer(Dparser * dp){
 
     	  uint16_t b = barva(0,100,80);
 
-
-    	  tft.setFont(&cmuntt14pt7b);
-          tft.setCursor(x,y);
-          tft.print( dp->vlhko+"%" );
-
-          reprint(x, y, b , dp->vlhko+"%" , 7);
-
           lasti[0] = dp->voda;
           lasti[1] = venku;
           lasti[2] = dp->vlhko;
@@ -313,13 +306,13 @@ void externiTeplomer(Dparser * dp){
 
 
 
-          	  	  x=120;
+          	  	  x=10;
           	  	  y=90;
           		tft.setFont(&FreeSmallFont);
           		tft.setCursor(x,y);
-          		tft.print("venku");
+          		tft.print("sklenik");
           		tft.setFont(&cmunbx16pt7b);
-          		reprint(x, y+30, barva(00,180,0) , venku , 1);
+          		reprint(x, y+30, barva(150,150,175) , dp->sklenik , 1);
       }
 
     }
@@ -391,7 +384,7 @@ void Lgfx::connecting(String s) {
 
       tft.setFont(&cmuntt14pt7b);
       superPrint(x+80, y, barva(90,90,90) , 15, String(teplota1,1) , 4);
-      superPrint(x, y, YELLOW , 15, String(tlak,0) , 5);
+      superPrint(x, y, YELLOW , 15, String(tlak,0)+" " , 5);
 
 
 
