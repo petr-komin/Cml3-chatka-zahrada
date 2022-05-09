@@ -19,6 +19,7 @@ class NetReader {
         String readData(String path);
         String ntp(Lgfx *);
 
+        int zapis(float teplota1, float teplota2, float teplota3, float tlak, Dparser *  );
 
 };
 

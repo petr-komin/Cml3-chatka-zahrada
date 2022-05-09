@@ -95,6 +95,45 @@ void NetReader::ConnectToWiFi() {
 
 }
 
+int  NetReader::zapis(float teplota1, float teplota2, float teplota3, float tlak, Dparser *  dp ){
+    String path = "/";
+
+    String d = "{\"s\":\"ch\",";
+
+   // d += "\"t1\":\"" + String(teplota1) + "\",";
+    d += "\"t2\":\"" + String(teplota2,1) + "\",";
+    d += "\"t3\":\"" + String(teplota3,1) + "\",";
+    d += "\"tlak\":\"" + String(tlak,0) + "\",";
+
+    d+= "\"u\":[";
+    for(int i =0; i<24; i++){
+        d+= String(dp->volty[i]);
+        if (i<23) d+=",";
+    }
+    d+="]}";
+
+    Serial.print( "poslat: ");
+    Serial.println( d);
+
+    if(WiFi.status()== WL_CONNECTED){
+
+        HTTPClient http;
+        String serverPath = serverName + path;
+        // Your Domain name with URL path or IP address with path
+        http.begin(serverPath.c_str());
+        int httpResponseCode = http.POST(d);
+        http.addHeader("Content-Type", "application/json");
+        Serial.print("HTTP Response code: ");
+        Serial.println(httpResponseCode);
+        http.end();
+    }else{
+        return 1;
+    }
+
+    return 0;
+}
+
+
 String NetReader::readData(String path) {
     Serial.println("GET data "+path);
     String payload ="";

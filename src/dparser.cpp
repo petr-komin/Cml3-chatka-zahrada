@@ -172,7 +172,7 @@ int Dparser::parseKadibouda(String data){
 
             if (json.length()>1){
 
-                StaticJsonDocument<200> doc;
+                StaticJsonDocument<600> doc;
                 DeserializationError error = deserializeJson(doc, json);
 
                 if (error) {
@@ -180,7 +180,7 @@ int Dparser::parseKadibouda(String data){
                     Serial.println(error.f_str());
                     return -1;
                 }
-
+//{"s":"ch","t2":"21.2","t3":"22.2","tlak":"1029","u":[3289,3297,3290,3297,3289,3290,3290,3282,3297,3282,3297,3290,3297,3289,3297,3283,0,0,0,0,0,0,0,0]}
                 const char* sens = doc["s"];
                 String sensor = String(sens);
 
@@ -202,7 +202,6 @@ int Dparser::parseKadibouda(String data){
                 if (sensor == "skl"){
                     double x =doc["t"];
                     sklenik = String(x,1);
-
                 }
 
 

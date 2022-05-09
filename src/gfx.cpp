@@ -292,10 +292,10 @@ void externiTeplomer(Dparser * dp){
     	vodarna(dp);
         int y=100;
         int x=12;
-
+/*
       String venku= String(dp->kadiba.number,1);
 
-      if (lasti[0]!= dp->voda || lasti[1]!=venku || lasti[2]!=dp->vlhko){
+      if (lasti[0]!= dp->voda || lasti[1]!=venku || lasti[2]!=dp->vlhko ){
 
     	  uint16_t b = barva(0,100,80);
 
@@ -303,17 +303,16 @@ void externiTeplomer(Dparser * dp){
           lasti[1] = venku;
           lasti[2] = dp->vlhko;
 
-
-
-
-          	  	  x=10;
-          	  	  y=90;
-          		tft.setFont(&FreeSmallFont);
-          		tft.setCursor(x,y);
-          		tft.print("sklenik");
-          		tft.setFont(&cmunbx16pt7b);
-          		reprint(x, y+30, barva(150,150,175) , dp->sklenik , 1);
       }
+*/
+        x=10;
+        y=90;
+        tft.setFont(&FreeSmallFont);
+        tft.setCursor(x,y);
+        tft.print("sklenik");
+        tft.setFont(&cmunbx16pt7b);
+        reprint(x, y+30, barva(150,150,175) , dp->sklenik , 1);
+
 
     }
 

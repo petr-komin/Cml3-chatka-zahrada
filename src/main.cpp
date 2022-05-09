@@ -52,6 +52,7 @@ void showDate(const char* txt, const DateTime& dt) {
     Serial.println();
 }
 
+
 #define I2C_Freq 100000
 
 
@@ -135,6 +136,8 @@ float teplota2;
 float teplota3;
 DateTime now;
 
+long last_datadend=0;
+
 void loop(void) {
 
 
@@ -154,7 +157,7 @@ void loop(void) {
     if (kokon % 10 ==0) {
 
         now = rtc.now();
-        now = now +  TimeSpan(3600);
+        now = now +  TimeSpan(3600+3600);
 
         gfx.printDateTime(&now);
 
@@ -185,15 +188,24 @@ void loop(void) {
 
         now = rtc.now();
         showDate("RTC  datum cas ", now);
+        long t = now.unixtime();
+
+        Serial.println("         unix t=" + String(t) + "    dt=" + String(  t - last_datadend ));
 
         if (dp.datareqPath.length()>4) {
             Serial.println("Kadiba");
 
             data = noro.readData(dp.datareqPath ); // "/data/2021-12-31/6.txt"
-
             Serial.println(data.length());
-            Serial.println(data);
+            //Serial.println(data);
             dp.parseKadibouda(data);
+            Serial.println("Reprint "+ String(dp.sklenik)+" "+dp.sud);
+
+
+            if (t - last_datadend  > 60*10  && dp.volty[0]>0 && dp.volty[4]>0) {
+                noro.zapis(teplota1, teplota2, teplota3, tlak, &dp);
+                last_datadend = t;
+            }
             gfx.espUdaje(&dp);
         }
     }
