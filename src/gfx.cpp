@@ -296,7 +296,7 @@ void externiTeplomer(Dparser * dp){
     tft.print("sprcha");
     tft.setFont(&cmunbx16pt7b);
     v = dp->sprcha.number;
-    reprint(x+4, y+20+30, b , String(v,1) , 6);
+    reprint(x+4, y+20+30, b , String(v,1) , 36);
 
 
 
