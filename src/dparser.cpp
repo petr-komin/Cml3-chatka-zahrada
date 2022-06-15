@@ -192,6 +192,8 @@ int Dparser::parseKadibouda(String data){
 
                 if (sensor == "Kadib") {
                     kadiba.number = doc["t"];
+
+                    sprcha.number = doc["tv"];
                 }
 
                 if (sensor == "sud"){

@@ -23,6 +23,7 @@ class Dparser{
     Udaj sauna2;
     Udaj sauna_bat;
     Udaj kadiba;
+    Udaj sprcha;
 
 
     String voda="*";

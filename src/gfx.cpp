@@ -284,6 +284,22 @@ void externiTeplomer(Dparser * dp){
 	tft.setFont(&cmunbx16pt7b);
 	double v = dp->kadiba.number;
 	reprint(x+4, y+20+30, b , String(v,1) , 6);
+
+
+
+    b = barva(200,1,1);
+    x=196;
+    y=70;
+    tft.setTextColor(b);
+    tft.setFont(&FreeSmallFont);
+    tft.setCursor(x+4,y+20);
+    tft.print("sprcha");
+    tft.setFont(&cmunbx16pt7b);
+    v = dp->sprcha.number;
+    reprint(x+4, y+20+30, b , String(v,1) , 6);
+
+
+
 }
 
     void Lgfx::espUdaje(Dparser *dp){
