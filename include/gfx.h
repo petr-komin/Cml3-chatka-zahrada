@@ -65,7 +65,7 @@ class Lgfx{
 
     void printDateTime(DateTime *);
 
-    void ruzneUdaje(float teplota1, float t2, float t3, float tlak);
+    void ruzneUdaje(float teplota1, float t2, float t3, float venku, float tlak);
 
     void connecting(String s);
     void connecting(String s, String detail);

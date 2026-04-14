@@ -6,6 +6,7 @@
 #include <OneWire.h>
 #include "gfx.h"
 #include "NetReader.h"
+#include "secrets.h"
 
 Lgfx gfx;
 Dparser dp;
@@ -26,6 +27,19 @@ OneWire oneWire(oneWireBus);
 
 // Pass our oneWire reference to Dallas Temperature sensor
 DallasTemperature sensors(&oneWire);
+
+// Dallas DS18B20 ROM adresy ze secrets.h
+DeviceAddress addrTady  = DALLAS_ADDR_TADY;
+DeviceAddress addrVoda  = DALLAS_ADDR_VODA;
+DeviceAddress addrVenku = DALLAS_ADDR_VENKU;
+
+// Precte teplotu ze senzoru podle ROM adresy.
+// Vraci NAN pokud senzor neni pripojen.
+float readDallas(DeviceAddress addr) {
+    float t = sensors.getTempC(addr);
+    if (t == DEVICE_DISCONNECTED_C) return NAN;
+    return t;
+}
 
 
 void showDate(const char* txt, const DateTime& dt) {
@@ -182,10 +196,11 @@ void loop(void) {
         teplota1 = bmp.readTemperature();
         tlak = (bmp.readPressure()/100.00) + korekce;
 
-        sensors.requestTemperatures(); // Send the command to get temperature
-        teplota2 = sensors.getTempCByIndex(0);
-        teplota3 = sensors.getTempCByIndex(1);
-        gfx.ruzneUdaje(teplota1, teplota2, teplota3, tlak);
+        sensors.requestTemperatures();
+        teplota2 = readDallas(addrTady);
+        teplota3 = readDallas(addrVoda);
+        float teplota_venku = readDallas(addrVenku);
+        gfx.ruzneUdaje(teplota1, teplota2, teplota3, teplota_venku, tlak);
         Serial.print("!");
     }
 

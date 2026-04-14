@@ -71,11 +71,11 @@ uint16_t barva(char r, char g, char b) {
   }
 
 void Lgfx::drawBatteryBox() {
-   uint16_t ram = barva(50, 50, 60);  // nenaplna modroseda
+   uint16_t ram = barva(60, 60, 60);  // nenaplna modroseda
    int bx = 295;
    int by = 14;
    int bw = 150;
-   int bh = 250;
+   int bh = 240;
    tft.drawRect(bx, by, bw, bh, ram);
 }
 
@@ -415,7 +415,13 @@ void Lgfx::connecting(String s, String detail) {
 }
 
 
-  void Lgfx::ruzneUdaje(float teplota1, float teplota2, float teplota3, float tlak){
+// Formátuje teplotu pro displej: "--.-" pokud senzor není připojen (NAN)
+String formatTeplota(float t) {
+    if (isnan(t)) return "--.-";
+    return String(t, 1);
+}
+
+  void Lgfx::ruzneUdaje(float teplota1, float teplota2, float teplota3, float venku, float tlak){
       int x=15;
       int y=160;
 
@@ -431,7 +437,7 @@ void Lgfx::connecting(String s, String detail) {
         tft.setTextColor(YELLOW);
 		tft.print("tady");
 		tft.setFont(&cmunbx16pt7b);
-		reprint(x, 50, YELLOW , String(teplota2,1) , 0);
+		reprint(x, 50, YELLOW , formatTeplota(teplota2) , 0);
 
 
 
@@ -443,7 +449,18 @@ void Lgfx::connecting(String s, String detail) {
         tft.setTextColor(b);
 		tft.print("voda");
 		tft.setFont(&cmunbx16pt7b);
-		reprint(x, 50, b , String(teplota3,1) , 35);
+		reprint(x, 50, b , formatTeplota(teplota3) , 35);
+
+
+		// venkovni teplota ze senzoru (Dallas VENKU)
+		uint16_t bv = barva(5, 255, 40);
+		x = 10;
+		tft.setFont(&FreeSmallFont);
+		tft.setCursor(x + 4, 20);
+		tft.setTextColor(bv);
+		tft.print("venku");
+		tft.setFont(&cmunbx16pt7b);
+		reprint(x + 4, 50, bv , formatTeplota(venku) , 6);
 
 
 
