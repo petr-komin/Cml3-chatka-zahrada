@@ -3,6 +3,7 @@
 //
 
 #include "NetReader.h"
+#include "secrets.h"
 
 
 #include "WiFi.h"
@@ -12,18 +13,18 @@
 #include <WiFiUdp.h>
 
 
-String serverName = "http://192.168.8.1";
-const char cml_ssid[] = "Kadibouda";
+String serverName = SERVER_URL;
+const char cml_ssid[] = WIFI_SSID_CML;
 WiFiUDP ntpUDP;
 
 
 void ConnectInternet(Lgfx * gfx) {
-    const char ssid[] = "OK1BE";
-    const char pass[] = "WIFI_PASSWORD_REMOVED";
+    const char ssid[] = WIFI_SSID;
+    const char pass[] = WIFI_PASSWORD;
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, pass);
 
-    gfx->connecting("Connecting OK1BE");
+    gfx->connecting("Connecting " WIFI_SSID);
 
     Serial.println("Connecting  "+String(ssid) );
 
@@ -73,8 +74,8 @@ String NetReader::ntp(Lgfx * gfx){
 void NetReader::ConnectToWiFi() {
 
     WiFi.mode(WIFI_STA);
-    WiFi.begin("Kadibouda");
-    Serial.println("Connecting  Kadibouda");
+    WiFi.begin(WIFI_SSID_CML);
+    Serial.println("Connecting  " WIFI_SSID_CML);
 
     uint8_t i = 0;
     while (WiFi.status() != WL_CONNECTED && i < 31) {
@@ -82,7 +83,7 @@ void NetReader::ConnectToWiFi() {
         delay(500);
 
         if ((++i % 16) == 0) {
-            Serial.println(F(" still trying to connect Kadibouda"));
+            Serial.println(F(" still trying to connect " WIFI_SSID_CML));
         }
     }
 
@@ -90,7 +91,7 @@ void NetReader::ConnectToWiFi() {
         Serial.print(F("Connected. My IP address is: "));
         Serial.println(WiFi.localIP());
     }else{
-        Serial.print(F("WL not connected Kadibouda"));
+        Serial.print(F("WL not connected " WIFI_SSID_CML));
     }
 
 }
