@@ -177,6 +177,9 @@ void loop(void) {
 
     if (kokon>=200) {
         kokon=0;
+
+        // TODO: Kadibouda server neni aktivni - odkomentovat az bude server spusteny
+        /*
         Serial.println("cau  t=");
         String data = noro.readData("/t");
         Serial.println(data.length());
@@ -184,7 +187,7 @@ void loop(void) {
         if (data.length()>0){
             dp.parseKadiTime(data);
         }
-
+        */
 
         now = rtc.now();
         showDate("RTC  datum cas ", now);
@@ -192,6 +195,8 @@ void loop(void) {
 
         Serial.println("         unix t=" + String(t) + "    dt=" + String(  t - last_datadend ));
 
+        // TODO: Kadibouda server neni aktivni - odkomentovat az bude server spusteny
+        /*
         if (dp.datareqPath.length()>4) {
             Serial.println("Kadiba");
 
@@ -208,6 +213,7 @@ void loop(void) {
             }
             gfx.espUdaje(&dp);
         }
+        */
     }
 
   delay(100 );

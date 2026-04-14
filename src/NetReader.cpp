@@ -38,9 +38,37 @@ void ConnectInternet(Lgfx * gfx) {
 
     Serial.println("[WiFi] Odpojuji predchozi spojeni...");
     WiFi.disconnect(true);
+    delay(200);
+    WiFi.mode(WIFI_STA);
     delay(100);
 
-    WiFi.mode(WIFI_STA);
+    // --- scan: vypiseme vsechny viditelne site ---
+    Serial.println("[WiFi] Skenuji site...");
+    gfx->connecting("WiFi: skenuju site...", "");
+    int n = WiFi.scanNetworks();
+    if (n == 0) {
+        Serial.println("[WiFi] Scan: zadne site nenalezeny!");
+        gfx->connecting("WiFi: zadne site!", "zkontroluj antenu");
+    } else {
+        Serial.printf("[WiFi] Scan: nalezeno %d siti:\n", n);
+        bool found = false;
+        for (int j = 0; j < n; j++) {
+            String name = WiFi.SSID(j);
+            int rssi = WiFi.RSSI(j);
+            Serial.printf("  [%d] \"%s\"  RSSI=%d dBm  ch=%d\n",
+                          j + 1, name.c_str(), rssi, WiFi.channel(j));
+            if (name == String(ssid)) found = true;
+        }
+        if (!found) {
+            Serial.printf("[WiFi] POZOR: sit \"%s\" v scanu NENI viditelna!\n", ssid);
+            gfx->connecting("WiFi: SSID nenalezeno", "sit neni v dosahu?");
+        } else {
+            Serial.printf("[WiFi] Sit \"%s\" nalezena, pripojuji...\n", ssid);
+        }
+    }
+    WiFi.scanDelete();
+    // --- konec scanu ---
+
     WiFi.begin(ssid, pass);
 
     Serial.print("[WiFi] Pripojuji k: ");
@@ -60,9 +88,9 @@ void ConnectInternet(Lgfx * gfx) {
         gfx->connecting("WiFi: " WIFI_SSID,
                         String(i) + "/40  " + statusStr);
 
-        // jakmile zname definitivni chybu, nema smysl cekat dal
-        if (st == WL_NO_SSID_AVAIL || st == WL_CONNECT_FAILED) {
-            Serial.println("[WiFi] Permanentni chyba, zkracuji cekani.");
+        // pouze spatne heslo je permanentni chyba - vse ostatni zkousime dal
+        if (st == WL_CONNECT_FAILED) {
+            Serial.println("[WiFi] Spatne heslo, koncim.");
             break;
         }
     }
