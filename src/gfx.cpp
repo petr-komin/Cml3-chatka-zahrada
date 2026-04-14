@@ -73,9 +73,9 @@ uint16_t barva(char r, char g, char b) {
    // Padding 8px kolem textu
    uint16_t ram = barva(50, 50, 60);  // nenaplna modroseda
    int bx = 295;   // levy kraj ramu (text zacina na 308, padding 8 => 308-8-5=295)
-   int by = 18;    // horni kraj
+   int by = 14;    // horni kraj
    int bw = 150;   // sirka (dva sloupce po ~55px + mezera + padding)
-   int bh = 230;   // vyska (8*25 + mezera + suma)
+   int bh = 250;   // vyska - zvetseno pro padding nahoře i dole kolem souctu
    tft.drawRect(bx, by, bw, bh, ram);
 
   }
@@ -173,7 +173,7 @@ uint16_t barvaDleNapeti(unsigned int u){
 void Lgfx::napeti(Dparser* dp ){
  //tft.setFont(&cmunobx8pt7b);
 tft.setFont(&FreeSans12pt7b);
-          int  y0= 35;
+          int  y0= 45;
           int x=308;
 float u;
 //tft.fillRect(200 , 0 , 40, 200, barva(100,12,33));
