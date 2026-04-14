@@ -186,7 +186,8 @@ float u;
           long vv = dp->volty[n];
           u = (float)vv/1000;
           suma+= vv;
-          reprint(x, y, barvaDleNapeti(vv) ,  String(u),  10+n);
+          String label = (vv == 0) ? "?.??" : String(u);
+          reprint(x, y, barvaDleNapeti(vv) ,  label,  10+n);
           y+=25;
 
           if (n==3) y+=10;
@@ -203,7 +204,8 @@ suma=0;
           u = (float)vv/1000;
 
           suma+=vv;
-          reprint(x, y,barvaDleNapeti(vv) , String(u),  10+n);
+          String label = (vv == 0) ? "?.??" : String(u);
+          reprint(x, y,barvaDleNapeti(vv) , label,  10+n);
           y+=25;
           if (n==11) y+=10;
         }
