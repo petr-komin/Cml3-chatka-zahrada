@@ -68,6 +68,16 @@ uint16_t barva(char r, char g, char b) {
    ram_hodin = barva(177,152,00);
    barva_datumu = barva(177,150,0);
 
+   // Obdelniky kolem sloupcu napeti clanku baterie
+   // Levy sloupec: clanky 0-3 a 4-7 (x=280), Pravy sloupec: clanky 8-11 a 12-15 (x=350)
+   // y0=35, 8 radku x 25px + 10px mezera uprostred, suma dole
+   uint16_t ram = barva(50, 50, 60);  // nenaplna modroseda
+   int bx = 275;   // levy kraj leveho sloupce
+   int by = 18;    // horni kraj
+   int bw = 130;   // sirka obou sloupcu dohromady
+   int bh = 230;   // vyska (8*25 + mezera + suma)
+   tft.drawRect(bx, by, bw, bh, ram);
+
   }
 
 String lasti[60];

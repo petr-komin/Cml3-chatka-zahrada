@@ -120,9 +120,26 @@ void setup() {
     }
 
     sensors.begin();
+    int sensorCount = sensors.getDeviceCount();
     Serial.print("Found ");
-    Serial.print(sensors.getDeviceCount(), DEC);
-    Serial.println(" devices.");
+    Serial.print(sensorCount, DEC);
+    Serial.println(" Dallas devices.");
+
+    // Vypis ROM adres vsech nalezenych Dallas senzoru
+    // Pouzij tyto adresy pro definici DALLAS_ADDR_* v secrets.h
+    DeviceAddress addr;
+    for (int i = 0; i < sensorCount; i++) {
+        if (sensors.getAddress(addr, i)) {
+            Serial.printf("  Dallas[%d] adresa: { ", i);
+            for (int b = 0; b < 8; b++) {
+                Serial.printf("0x%02X", addr[b]);
+                if (b < 7) Serial.print(", ");
+            }
+            Serial.println(" }");
+        } else {
+            Serial.printf("  Dallas[%d] adresu nelze precist\n", i);
+        }
+    }
 
 }
 
