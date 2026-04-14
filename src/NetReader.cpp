@@ -18,33 +18,67 @@ const char cml_ssid[] = WIFI_SSID_CML;
 WiFiUDP ntpUDP;
 
 
+static String wifiStatusText(wl_status_t s) {
+    switch (s) {
+        case WL_IDLE_STATUS:     return "idle...";
+        case WL_NO_SSID_AVAIL:   return "SSID nenalezeno!";
+        case WL_SCAN_COMPLETED:  return "scan ok";
+        case WL_CONNECTED:       return "pripojeno";
+        case WL_CONNECT_FAILED:  return "spatne heslo!";
+        case WL_CONNECTION_LOST: return "spojeni ztraceno";
+        case WL_DISCONNECTED:    return "odpojen / timeout";
+        default:                 return "status=" + String((int)s);
+    }
+}
+
+
 void ConnectInternet(Lgfx * gfx) {
     const char ssid[] = WIFI_SSID;
     const char pass[] = WIFI_PASSWORD;
+
+    Serial.println("[WiFi] Odpojuji predchozi spojeni...");
+    WiFi.disconnect(true);
+    delay(100);
+
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, pass);
 
-    gfx->connecting("Connecting " WIFI_SSID);
+    Serial.print("[WiFi] Pripojuji k: ");
+    Serial.println(ssid);
 
-    Serial.println("Connecting  "+String(ssid) );
+    gfx->connecting("WiFi: " WIFI_SSID, "cekam...");
 
+    // az 40 pokusu x 500ms = 20 sekund
     uint8_t i = 0;
-    while (WiFi.status() != WL_CONNECTED && i<15) {
-        Serial.print('.');
+    wl_status_t st;
+    while ((st = WiFi.status()) != WL_CONNECTED && i < 40) {
         delay(500);
+        i++;
 
-        if ((++i % 16) == 0) {
-            Serial.print(F(" still trying to connect "));
-            Serial.println (cml_ssid);
+        String statusStr = wifiStatusText(st);
+        Serial.printf("[WiFi] pokus %d/40  status: %s\n", i, statusStr.c_str());
+        gfx->connecting("WiFi: " WIFI_SSID,
+                        String(i) + "/40  " + statusStr);
+
+        // jakmile zname definitivni chybu, nema smysl cekat dal
+        if (st == WL_NO_SSID_AVAIL || st == WL_CONNECT_FAILED) {
+            Serial.println("[WiFi] Permanentni chyba, zkracuji cekani.");
+            break;
         }
     }
 
     if (WiFi.status() == WL_CONNECTED) {
-        gfx->connecting("Připojeno");
-        Serial.print(F("Connected. My IP address is: "));
-        Serial.println(WiFi.localIP());
-    }else{
-        gfx->connecting("Bez připojení");
+        String ip = WiFi.localIP().toString();
+        Serial.print("[WiFi] Pripojeno! IP: ");
+        Serial.println(ip);
+        gfx->connecting("WiFi: pripojeno", ip);
+        delay(300);
+    } else {
+        String errStr = wifiStatusText(WiFi.status());
+        Serial.print("[WiFi] CHYBA: ");
+        Serial.println(errStr);
+        gfx->connecting("WiFi: CHYBA", errStr);
+        delay(2000);
     }
 }
 
@@ -55,16 +89,29 @@ String NetReader::ntp(Lgfx * gfx){
     ConnectInternet(gfx);
     NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 0, 60000);
     if(WiFi.status()== WL_CONNECTED) {
-        Serial.println("timeclient ...");
-        gfx->connecting("Načítám přesný čas");
+        Serial.println("[NTP] Stahuji cas...");
+        gfx->connecting("NTP: stahuji cas...", "europe.pool.ntp.org");
 
         timeClient.begin();
-        timeClient.update();
-        Serial.println( timeClient.getFormattedTime());
-        Serial.println( timeClient.getFormattedDate());
+        bool ok = timeClient.update();
+
+        if (ok) {
+            String date = timeClient.getFormattedDate();
+            String time = timeClient.getFormattedTime();
+            Serial.print("[NTP] Datum: "); Serial.println(date);
+            Serial.print("[NTP] Cas:   "); Serial.println(time);
+            gfx->connecting("NTP: OK  " + time, date);
+            delay(1500);
+        } else {
+            Serial.println("[NTP] update() selhal!");
+            gfx->connecting("NTP: CHYBA", "update selhal");
+            delay(2000);
+        }
         timeClient.end();
     }else{
-        Serial.println("WL not connected for NTP");
+        Serial.println("[NTP] WiFi neni pripojeno, preskakuji NTP.");
+        gfx->connecting("NTP: preskoceno", "neni WiFi");
+        delay(1500);
         return "";
     }
     WiFi.disconnect();

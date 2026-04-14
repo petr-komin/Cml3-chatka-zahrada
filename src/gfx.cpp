@@ -378,19 +378,30 @@ tft.setFont(&cmunobx8pt7b);
   }
 
 void Lgfx::connecting(String s) {
+    connecting(s, "");
+}
 
-      int x = 60;
-      int y = 60;
+void Lgfx::connecting(String s, String detail) {
 
-        tft.fillRect(x , y , 300, 40, BLACK);
+    int x = 60;
+    int y = 45;
 
-        if (s.length()>0) {
-            tft.setFont(&FreeSans12pt7b);
-            tft.setCursor(x+3,y+32);
-            tft.setTextColor(RED);
-            tft.print(s);
-        }
-  }
+    tft.fillRect(x, y, 360, 70, BLACK);
+
+    tft.setFont(&FreeSans12pt7b);
+
+    if (s.length() > 0) {
+        tft.setCursor(x + 3, y + 26);
+        tft.setTextColor(RED);
+        tft.print(s);
+    }
+
+    if (detail.length() > 0) {
+        tft.setCursor(x + 3, y + 56);
+        tft.setTextColor(barva(200, 200, 0));
+        tft.print(detail);
+    }
+}
 
 
   void Lgfx::ruzneUdaje(float teplota1, float teplota2, float teplota3, float tlak){
