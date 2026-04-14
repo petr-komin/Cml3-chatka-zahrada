@@ -69,12 +69,12 @@ uint16_t barva(char r, char g, char b) {
    barva_datumu = barva(177,150,0);
 
    // Obdelniky kolem sloupcu napeti clanku baterie
-   // Levy sloupec: clanky 0-3 a 4-7 (x=280), Pravy sloupec: clanky 8-11 a 12-15 (x=350)
-   // y0=35, 8 radku x 25px + 10px mezera uprostred, suma dole
+   // Texty: levy x=308, pravy x=378 (posunuto +28 oproti puvodnimu)
+   // Padding 8px kolem textu
    uint16_t ram = barva(50, 50, 60);  // nenaplna modroseda
-   int bx = 275;   // levy kraj leveho sloupce
+   int bx = 295;   // levy kraj ramu (text zacina na 308, padding 8 => 308-8-5=295)
    int by = 18;    // horni kraj
-   int bw = 130;   // sirka obou sloupcu dohromady
+   int bw = 150;   // sirka (dva sloupce po ~55px + mezera + padding)
    int bh = 230;   // vyska (8*25 + mezera + suma)
    tft.drawRect(bx, by, bw, bh, ram);
 
@@ -174,7 +174,7 @@ void Lgfx::napeti(Dparser* dp ){
  //tft.setFont(&cmunobx8pt7b);
 tft.setFont(&FreeSans12pt7b);
           int  y0= 35;
-          int x=280;
+          int x=308;
 float u;
 //tft.fillRect(200 , 0 , 40, 200, barva(100,12,33));
 
@@ -197,7 +197,7 @@ float u;
 
 suma=0;
         y=y0;
-        x=350;
+        x=378;
 
         for (int n=8; n<16; n++){
           long vv = dp->volty[n];
