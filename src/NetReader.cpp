@@ -76,17 +76,17 @@ void ConnectInternet(Lgfx * gfx) {
 
     gfx->connecting("WiFi: " WIFI_SSID, "cekam...");
 
-    // az 40 pokusu x 500ms = 20 sekund
+    // az 20 pokusu x 500ms = 10 sekund
     uint8_t i = 0;
     wl_status_t st;
-    while ((st = WiFi.status()) != WL_CONNECTED && i < 40) {
+    while ((st = WiFi.status()) != WL_CONNECTED && i < 20) {
         delay(500);
         i++;
 
         String statusStr = wifiStatusText(st);
-        Serial.printf("[WiFi] pokus %d/40  status: %s\n", i, statusStr.c_str());
+        Serial.printf("[WiFi] pokus %d/20  status: %s\n", i, statusStr.c_str());
         gfx->connecting("WiFi: " WIFI_SSID,
-                        String(i) + "/40  " + statusStr);
+                        String(i) + "/20  " + statusStr);
 
         // pouze spatne heslo je permanentni chyba - vse ostatni zkousime dal
         if (st == WL_CONNECT_FAILED) {

@@ -107,9 +107,7 @@ void setup() {
 
 
         gfx.connecting("");
-        //noro.ConnectToWiFi();
-        //gfx.napeti(&dp);
-        //gfx.ruzneUdaje(100, 2323, 222, 1200);
+        gfx.napeti(&dp);  // vykreslí ?.?? dokud neprijdou realna data
 
     Serial2.begin(4800);
     Serial2.setTimeout(100);
