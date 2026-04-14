@@ -69,6 +69,7 @@ class Lgfx{
 
     void connecting(String s);
     void connecting(String s, String detail);
+    void drawBatteryBox();
 
   };
 

@@ -68,17 +68,16 @@ uint16_t barva(char r, char g, char b) {
    ram_hodin = barva(177,152,00);
    barva_datumu = barva(177,150,0);
 
-   // Obdelniky kolem sloupcu napeti clanku baterie
-   // Texty: levy x=308, pravy x=378 (posunuto +28 oproti puvodnimu)
-   // Padding 8px kolem textu
-   uint16_t ram = barva(50, 50, 60);  // nenaplna modroseda
-   int bx = 295;   // levy kraj ramu (text zacina na 308, padding 8 => 308-8-5=295)
-   int by = 14;    // horni kraj
-   int bw = 150;   // sirka (dva sloupce po ~55px + mezera + padding)
-   int bh = 250;   // vyska - zvetseno pro padding nahoře i dole kolem souctu
-   tft.drawRect(bx, by, bw, bh, ram);
-
   }
+
+void Lgfx::drawBatteryBox() {
+   uint16_t ram = barva(50, 50, 60);  // nenaplna modroseda
+   int bx = 295;
+   int by = 14;
+   int bw = 150;
+   int bh = 250;
+   tft.drawRect(bx, by, bw, bh, ram);
+}
 
 String lasti[60];
 
@@ -193,7 +192,7 @@ float u;
           if (n==3) y+=10;
         }
 
-        reprint(x, y+15, barva_suma ,  String((double)suma/1000,1),  9);
+        reprint(x, y+25, barva_suma ,  String((double)suma/1000,1),  9);
 
 suma=0;
         y=y0;
@@ -211,7 +210,7 @@ suma=0;
         }
 
 
-        reprint(x, y+15, barva_suma , String((double)suma/1000,1),  8);
+        reprint(x, y+25, barva_suma , String((double)suma/1000,1),  8);
 
   };
 

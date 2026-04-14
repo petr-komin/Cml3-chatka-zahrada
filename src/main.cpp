@@ -107,6 +107,7 @@ void setup() {
 
 
         gfx.connecting("");
+        gfx.drawBatteryBox();
         gfx.napeti(&dp);  // vykreslí ?.?? dokud neprijdou realna data
 
     Serial2.begin(4800);
