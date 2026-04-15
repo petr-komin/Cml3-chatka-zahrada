@@ -1,12 +1,18 @@
 #include <Arduino.h>
 //#include <Adafruit_I2CDevice.h>
 
+#include <esp_now.h>
+#include <WiFi.h>
 #include <Adafruit_BMP280.h>
 #include <DallasTemperature.h>
 #include <OneWire.h>
 #include "gfx.h"
 #include "NetReader.h"
 #include "secrets.h"
+#include "RemoteSensor.h"
+
+// dopředná deklarace ESP-NOW callbacku
+void onEspNowReceive(const uint8_t *mac, const uint8_t *data, int len);
 
 Lgfx gfx;
 Dparser dp;
@@ -117,7 +123,17 @@ void setup() {
             showDate(">>>>> ",dntp);
             rtc.adjust(dntp);
         }
-        //delay(5000);
+
+        // ESP-NOW init — po NTP, WiFi zůstane v STA módu bez připojení (žádný beacon)
+        WiFi.mode(WIFI_STA);
+        WiFi.disconnect(false);
+        Serial.println("ESP-NOW MAC adresa prijimace: " + WiFi.macAddress());
+        if (esp_now_init() == ESP_OK) {
+            esp_now_register_recv_cb(onEspNowReceive);
+            Serial.println("ESP-NOW prijimac inicializovan");
+        } else {
+            Serial.println("ESP-NOW init selhal");
+        }
 
 
         gfx.connecting("");
@@ -168,6 +184,43 @@ DateTime now;
 
 long last_datadend=0;
 
+// Pole vzdálených senzorů (ESP-NOW)
+RemoteSensor remoteSensors[REMOTE_SENSOR_COUNT] = {};
+
+void onEspNowReceive(const uint8_t *mac, const uint8_t *data, int len) {
+    if (len != sizeof(EspNowPacket)) return;
+    EspNowPacket pkt;
+    memcpy(&pkt, data, sizeof(pkt));
+
+    // null-terminate pro jistotu
+    pkt.label[15]   = '\0';
+    pkt.hodnota[31] = '\0';
+
+    // hledej existující slot podle label
+    int freeSlot = -1;
+    for (int i = 0; i < REMOTE_SENSOR_COUNT; i++) {
+        if (remoteSensors[i].active &&
+            strncmp(remoteSensors[i].label, pkt.label, 16) == 0) {
+            strncpy(remoteSensors[i].hodnota, pkt.hodnota, 32);
+            remoteSensors[i].baterie_mv = pkt.baterie_mv;
+            remoteSensors[i].lastSeen  = millis();
+            return;
+        }
+        if (!remoteSensors[i].active && freeSlot == -1) freeSlot = i;
+    }
+    // nový senzor — ulož do prvního volného slotu
+    if (freeSlot != -1) {
+        strncpy(remoteSensors[freeSlot].label,   pkt.label,   16);
+        strncpy(remoteSensors[freeSlot].hodnota, pkt.hodnota, 32);
+        remoteSensors[freeSlot].baterie_mv = pkt.baterie_mv;
+        remoteSensors[freeSlot].lastSeen   = millis();
+        remoteSensors[freeSlot].active     = true;
+        Serial.println("ESP-NOW: novy senzor '" + String(pkt.label) + "' v slotu " + String(freeSlot));
+    } else {
+        Serial.println("ESP-NOW: vsechny sloty plne, paket zahozen");
+    }
+}
+
 void loop(void) {
 
 
@@ -200,7 +253,8 @@ void loop(void) {
         teplota2 = readDallas(addrTady);
         teplota3 = readDallas(addrVoda);
         float teplota_venku = readDallas(addrVenku);
-        gfx.ruzneUdaje(teplota1, teplota2, teplota3, teplota_venku, tlak);
+        gfx.ruzneUdaje(teplota2, teplota3, teplota_venku, tlak);
+        gfx.remoteSenzory(remoteSensors, REMOTE_SENSOR_COUNT);
         Serial.print("!");
     }
 

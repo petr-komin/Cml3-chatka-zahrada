@@ -13,6 +13,7 @@
 
 #include "dparser.h"
 #include "RTClib.h"
+#include "RemoteSensor.h"
 
 
 
@@ -65,7 +66,10 @@ class Lgfx{
 
     void printDateTime(DateTime *);
 
-    void ruzneUdaje(float teplota1, float t2, float t3, float venku, float tlak);
+    void ruzneUdaje(float t2, float t3, float venku, float tlak);
+
+    void tlakBox(float tlak);
+    void remoteSenzory(RemoteSensor* senzory, int count);
 
     void connecting(String s);
     void connecting(String s, String detail);

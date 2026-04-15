@@ -421,15 +421,11 @@ String formatTeplota(float t) {
     return String(t, 1);
 }
 
-  void Lgfx::ruzneUdaje(float teplota1, float teplota2, float teplota3, float venku, float tlak){
+  void Lgfx::ruzneUdaje(float teplota2, float teplota3, float venku, float tlak){
+      tlakBox(tlak);
+
       int x=15;
       int y=160;
-
-      tft.setFont(&cmuntt14pt7b);
-      superPrint(x+80, y, barva(90,90,90) , 15, String(teplota1,1) , 4);
-      superPrint(x, y, YELLOW , 15, String(tlak,0)+" " , 5);
-
-
 
       	x=100;
 		tft.setFont(&FreeSmallFont);
@@ -461,10 +457,85 @@ String formatTeplota(float t) {
 		tft.print("venku");
 		tft.setFont(&cmunbx16pt7b);
 		reprint(x + 4, 50, bv , formatTeplota(venku) , 6);
-
-
-
-
-
-
   }
+
+
+// --- Tlak box vedle hodinového boxu ---
+
+static bool tlak_box_init = false;
+
+void Lgfx::tlakBox(float tlak) {
+    const int x = 190;
+    const int y = 255;
+    const int w = 95;
+    const int h = 54;
+
+    if (!tlak_box_init) {
+        tft.fillRect(x, y, w, h, bg_hodin);
+        tft.drawRect(x, y, w, h, ram_hodin);
+        tft.setFont(&FreeSmallFont);
+        tft.setCursor(x + 5, y + 15);
+        tft.setTextColor(barva_datumu);
+        tft.print("hPa");
+        tlak_box_init = true;
+    }
+
+    tft.setFont(&cmunbx16pt7b);
+    reprint(x + 5, y + 45, YELLOW, String(tlak, 0), 30);
+}
+
+
+// --- Vzdálené senzory (ESP-NOW) ---
+
+static uint16_t barvaBaterie(uint16_t mv) {
+    if (mv >= 3500) return barva(0, 220, 0);
+    if (mv >= 3200) return barva(220, 220, 0);
+    return barva(220, 40, 0);
+}
+
+static uint16_t barvaSlotu(int slot) {
+    switch (slot) {
+        case 0: return barva(255, 160,   0);  // oranžová
+        case 1: return barva(  0, 200, 255);  // azurová
+        case 2: return barva(180, 255,  80);  // žlutozelená
+        default: return barva(180, 180, 180);
+    }
+}
+
+void Lgfx::remoteSenzory(RemoteSensor* senzory, int count) {
+    const int x_label   = 8;
+    const int x_hodnota = 8;
+    const int x_bat     = 200;
+    const int y_start   = 110;
+    const int y_krok    = 48;
+
+    for (int i = 0; i < count && i < REMOTE_SENSOR_COUNT; i++) {
+        int y = y_start + i * y_krok;
+
+        if (!senzory[i].active) {
+            continue;
+        }
+
+        bool timeout = (millis() - senzory[i].lastSeen) > REMOTE_TIMEOUT_MS;
+        uint16_t b = timeout ? barva(80, 80, 80) : barvaSlotu(i);
+
+        // label — malý font
+        tft.setFont(&FreeSmallFont);
+        tft.setCursor(x_label, y - 12);
+        tft.setTextColor(b);
+        tft.print(senzory[i].label);
+
+        // hodnota — velký font
+        tft.setFont(&cmunbx16pt7b);
+        reprint(x_hodnota, y + 18, b, String(senzory[i].hodnota), 40 + i);
+
+        // baterie — malý font vpravo
+        if (senzory[i].baterie_mv > 0) {
+            uint16_t bb = timeout ? barva(80, 80, 80) : barvaBaterie(senzory[i].baterie_mv);
+            float v = senzory[i].baterie_mv / 1000.0f;
+            String batStr = String(v, 1) + "V";
+            tft.setFont(&cmunobx8pt7b);
+            reprint(x_bat, y + 18, bb, batStr, 50 + i);
+        }
+    }
+}
