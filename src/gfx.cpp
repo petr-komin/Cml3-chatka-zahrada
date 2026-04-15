@@ -443,7 +443,7 @@ String formatTeplota(float t) {
 
 		uint16_t b = barva(0,180,255);
 
-      	x=200;
+      	x=210;
 		tft.setFont(&FreeSmallFont);
 		tft.setCursor(x,20);
         tft.setTextColor(b);
